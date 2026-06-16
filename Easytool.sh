@@ -3,20 +3,21 @@
 while true; do
 clear
 
-echo "=========================="
-echo " UBUNTU PRO TOOL"
-echo "=========================="
+echo "=============================="
+echo " UBUNTU TOOL v2 (NEW UPDATE)"
+echo "=============================="
 
-echo "1) Update System (Auto)"
-echo "2) Clean System"
-echo "3) RAM Info"
-echo "4) CPU Info"
-echo "5) Disk Info"
-echo "6) Open Port (Firewall)"
+echo "1) Full System Update (Safe)"
+echo "2) Clean System (Deep)"
+echo "3) RAM / CPU Info"
+echo "4) Disk Usage"
+echo "5) Running Processes"
+echo "6) Open Firewall Port"
 echo "7) Internet Speed Test"
-echo "8) Auto Script Update Check"
-echo "9) Reboot VPS"
-echo "10) Exit"
+echo "8) Script Auto Update Check"
+echo "9) System Uptime"
+echo "10) Reboot VPS"
+echo "11) Exit"
 echo ""
 
 read -p "Choose option: " opt
@@ -31,24 +32,32 @@ sleep 2
 ;;
 
 2)
-sudo apt autoremove -y && sudo apt clean
+echo "Cleaning system..."
+sudo apt autoremove -y
+sudo apt autoclean -y
+sudo apt clean
 echo "Clean Done ✔"
 sleep 2
 ;;
 
 3)
+echo "===== RAM ====="
 free -h
-read -p "Press Enter..."
+echo ""
+echo "===== CPU LOAD ====="
+uptime
+read -p "Enter..."
 ;;
 
 4)
-uptime
-read -p "Press Enter..."
+df -h
+read -p "Enter..."
 ;;
 
 5)
-df -h
-read -p "Press Enter..."
+echo "Top Processes:"
+ps aux --sort=-%cpu | head -10
+read -p "Enter..."
 ;;
 
 6)
@@ -59,35 +68,41 @@ sleep 2
 ;;
 
 7)
-echo "Testing Internet Speed..."
+echo "Installing speedtest..."
 sudo apt install speedtest-cli -y > /dev/null 2>&1
+echo "Running speed test..."
 speedtest-cli
-read -p "Press Enter..."
+read -p "Enter..."
 ;;
 
 8)
-echo "Checking updates for script..."
+echo "Checking script update..."
 
 SCRIPT_URL="https://raw.githubusercontent.com/USER/REPO/main/ubuntu-tool.sh"
 
-LOCAL_HASH=$(md5sum "$0" | awk '{print $1}')
-REMOTE_HASH=$(curl -s "$SCRIPT_URL" | md5sum | awk '{print $1}')
+LOCAL=$(md5sum "$0" | awk '{print $1}')
+REMOTE=$(curl -s "$SCRIPT_URL" | md5sum | awk '{print $1}')
 
-if [ "$LOCAL_HASH" == "$REMOTE_HASH" ]; then
-    echo "Script is up to date ✔"
+if [ "$LOCAL" == "$REMOTE" ]; then
+    echo "You are using latest version ✔"
 else
     echo "Update available ⚡"
-    echo "Run: curl -O $SCRIPT_URL"
+    echo "Download new version from GitHub"
 fi
 
-read -p "Press Enter..."
+read -p "Enter..."
 ;;
 
 9)
-reboot
+uptime
+read -p "Enter..."
 ;;
 
 10)
+reboot
+;;
+
+11)
 exit 0
 ;;
 
