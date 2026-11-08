@@ -1,0 +1,42 @@
+
+name: Proxmox 9.0.11 + Pinggy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  proxmox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Start Proxmox Docker
+        run: |
+          docker run -itd \
+            --name proxmox \
+            --hostname pve \
+            --privileged \
+            -p 8006:8006 \
+            rtedpro/proxmox:9.0.11
+
+      - name: Wait for Proxmox
+        run: |
+          echo "Waiting for Proxmox..."
+          sleep 60
+          docker ps -a
+          docker logs --tail 50 proxmox
+
+      - name: Start Pinggy SSH Tunnel
+        run: |
+          echo "================================"
+          echo "       PINGGY QR CREATING"
+          echo "================================"
+
+          ssh -tt \
+            -o StrictHostKeyChecking=no \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=3 \
+            -p 443 \
+            -R0:localhost:8006 \
+            qr+tcp@free.pinggy.io
+            
